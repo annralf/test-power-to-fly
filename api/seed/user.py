@@ -11,7 +11,7 @@ class UserFaker():
         users = []
         local_session = Session()
         idUser = 0
-        for _ in range(1000000):
+        for _ in range(10):
             idUser += 1
             name = faker.first_name()
             lastname = faker.last_name()

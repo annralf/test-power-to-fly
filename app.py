@@ -1,7 +1,7 @@
+from asyncio.log import logger
 from functools import cache
 from gc import set_debug
-import click
-from flask import Blueprint, Flask, jsonify, request
+from flask import Blueprint, Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_seeder import FlaskSeeder
 from flask_marshmallow import Marshmallow
@@ -15,6 +15,8 @@ from api.seed.user import UserFaker
 
 from api.services.users import ApiInit, UsersResource
 
+from api.settings.base import Base, engine
+
 logging.basicConfig(
         level=logging.DEBUG,
         format="%(asctime)s %(name)-12s %(levelname)-8s %(message)s",
@@ -24,7 +26,7 @@ logging.basicConfig(
 
 
 bp = Blueprint('api', __name__)
-
+db = None
 
 @bp.cli.command('cli')
 def display():
@@ -35,16 +37,24 @@ def settingUser():
     seedUser = UserFaker()
     return seedUser.set()
 
+@bp.cli.command('start-database')
+def starDB():
+    logger.debug('starting data base')
+    Base.metadata.create_all(engine)
+    logger.debug('finishing data base')
+
 def create_app():
     app = Flask(__name__)
-    swagger = Swagger(app)
+    Swagger(app)
     app.config.from_object("config.BaseConfig")
 
     cache = Cache(app)
     cache.init_app(app,config={"CACHE_TYPE": "redis"})
 
     db = SQLAlchemy(app)
-    ma = Marshmallow(app)
+    db.create_all()
+    db.session.commit()
+    Marshmallow(app)
     seeder = FlaskSeeder()
     seeder.init_app(app, db)
 
@@ -54,5 +64,3 @@ def create_app():
     
     app.register_blueprint(bp)
     return app
-
-
