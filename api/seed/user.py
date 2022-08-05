@@ -4,6 +4,7 @@ from setuptools import find_packages
 from api.settings.base import Session
 from api.models.users import User
 
+import config
 
 class UserFaker():
     def set(self):
@@ -11,7 +12,7 @@ class UserFaker():
         users = []
         local_session = Session()
         idUser = 0
-        for _ in range(10):
+        for _ in range(config.ApiSetting.SEEDER):
             idUser += 1
             name = faker.first_name()
             lastname = faker.last_name()

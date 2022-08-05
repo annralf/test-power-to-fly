@@ -40,6 +40,7 @@ def settingUser():
 @bp.cli.command('start-database')
 def starDB():
     logger.debug('starting data base')
+    Base.metadata.drop_all(engine)
     Base.metadata.create_all(engine)
     logger.debug('finishing data base')
 

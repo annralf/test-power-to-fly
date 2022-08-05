@@ -11,6 +11,7 @@ class ApiSetting(object):
     PAGESIZE = 2
     PAGENUMBER = 1
     SORT=False
+    SEEDER=1000000
 
 
 class BaseConfig(object):
